@@ -1,7 +1,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 admin.initializeApp();
-// const db = admin.firestore();
+const db = admin.firestore();
 
 export const dailyJob = functions.pubsub
   .schedule("30 5 * * *")
@@ -9,7 +9,6 @@ export const dailyJob = functions.pubsub
     console.log("This will be run every day at 5:30 AM");
   });
 
-/*
 export const taskRunner = functions.runWith({ memory: "2GB" })
   .pubsub
   .schedule("* * * * *")
@@ -53,4 +52,3 @@ interface Workers {
 const workers: Workers = {
   helloWorld: () => db.collection("logs").add({ hello: "world" }),
 };
-*/
