@@ -1,27 +1,27 @@
-import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
+import * as functions from 'firebase-functions';
+import * as admin from 'firebase-admin';
 admin.initializeApp();
 const db = admin.firestore();
 
 export const dailyJob = functions.pubsub
-  .schedule("30 5 * * *")
+  .schedule('30 5 * * *')
   .onRun((_) => {
-    console.log("This will be run every day at 5:30 AM");
+    console.log('This will be run every day at 5:30 AM');
   });
 
-export const taskRunner = functions.runWith({ memory: "2GB" })
+export const taskRunner = functions.runWith({ memory: '2GB' })
   .pubsub
-  .schedule("* * * * *")
+  .schedule('* * * * *')
   .onRun(async (_) => {
-    console.log("by the minute!");
+    console.log('by the minute!');
 
     // consistent timestamp
     const now = admin.firestore.Timestamp.now();
 
     // query all documents ready to perform
-    const query = db.collection("tasks")
-      .where("performAt", "<=", now)
-      .where("status", "==", "scheduled");
+    const query = db.collection('tasks')
+      .where('performAt', '<=', now)
+      .where('status', '==', 'scheduled');
 
     const tasks = await query.get();
 
@@ -32,8 +32,8 @@ export const taskRunner = functions.runWith({ memory: "2GB" })
     tasks.forEach((snapshot) => {
       const { worker, options } = snapshot.data();
       const job = workers[worker](options)
-        .then(() => snapshot.ref.update({ status: "complete" }))
-        .catch((_) => snapshot.ref.update({ status: "error" }));
+        .then(() => snapshot.ref.update({ status: 'complete' }))
+        .catch((_) => snapshot.ref.update({ status: 'error' }));
 
       jobs.push(job);
     });
@@ -50,5 +50,5 @@ interface Workers {
 // Business logic for named tasks.
 // Function name should match worker field on task document.
 const workers: Workers = {
-  helloWorld: () => db.collection("logs").add({ hello: "world" }),
+  helloWorld: () => db.collection('logs').add({ hello: 'world' }),
 };
